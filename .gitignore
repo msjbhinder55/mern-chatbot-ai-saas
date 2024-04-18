@@ -1,0 +1,17 @@
+# Ignore Node modules
+backend/node_modules/
+
+# Ignore compiled output
+backend/dist/
+backend/build/
+
+# Ignore environment variables
+backend/.env
+
+# Ignore IDE specific files
+backend/.vscode/
+backend/.idea/
+
+# Ignore dependency lock files
+backend/package-lock.json
+backend/yarn.lock
