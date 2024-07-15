@@ -11,12 +11,10 @@ import {
   sendChatRequest,
 } from "../helpers/api-communicator";
 import toast from "react-hot-toast";
-
 type Message = {
   role: "user" | "assistant";
   content: string;
 };
-
 const Chat = () => {
   const navigate = useNavigate();
   const inputRef = useRef<HTMLInputElement | null>(null);
@@ -33,7 +31,6 @@ const Chat = () => {
     setChatMessages([...chatData.chats]);
     //
   };
-
   const handleDeleteChats = async () => {
     try {
       toast.loading("Deleting Chats", { id: "deletechats" });
@@ -45,7 +42,6 @@ const Chat = () => {
       toast.error("Deleting chats failed", { id: "deletechats" });
     }
   };
-
   useLayoutEffect(() => {
     if (auth?.isLoggedIn && auth.user) {
       toast.loading("Loading Chats", { id: "loadchats" });
@@ -60,13 +56,11 @@ const Chat = () => {
         });
     }
   }, [auth]);
-
   useEffect(() => {
     if (!auth?.user) {
       return navigate("/login");
     }
   }, [auth]);
-
   return (
     <Box
       sx={{

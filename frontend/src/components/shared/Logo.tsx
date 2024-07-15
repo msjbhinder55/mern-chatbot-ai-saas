@@ -1,7 +1,5 @@
-import { Typography } from "@mui/material";
-import React from "react";
 import { Link } from "react-router-dom";
-
+import Typography from "@mui/material/Typography";
 const Logo = () => {
   return (
     <div
@@ -20,7 +18,7 @@ const Logo = () => {
           height={"30px"}
           className="image-inverted"
         />
-      </Link>
+      </Link>{" "}
       <Typography
         sx={{
           display: { md: "block", sm: "none", xs: "none" },

@@ -1,5 +1,6 @@
-import { AppBar, Toolbar } from "@mui/material";
 import React from "react";
+import AppBar from "@mui/material/AppBar";
+import Toolbar from "@mui/material/Toolbar";
 import Logo from "./shared/Logo";
 import { useAuth } from "../context/AuthContext";
 import NavigationLink from "./shared/NavigationLink";
@@ -23,9 +24,9 @@ const Header = () => {
               />
               <NavigationLink
                 bg="#51538f"
-                to="/"
-                text="Logout"
                 textColor="white"
+                to="/"
+                text="logout"
                 onClick={auth.logout}
               />
             </>
@@ -39,9 +40,9 @@ const Header = () => {
               />
               <NavigationLink
                 bg="#51538f"
+                textColor="white"
                 to="/signup"
                 text="Signup"
-                textColor="white"
               />
             </>
           )}
