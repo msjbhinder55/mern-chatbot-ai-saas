@@ -1,22 +1,26 @@
-# Use Node.js base image
-FROM node:18
+# Stage 1: Build
+FROM node:18-alpine as builder
 
-# Set working directory
 WORKDIR /app
 
-# Copy package.json and install dependencies
 COPY package.json package-lock.json ./
-RUN npm install
+RUN npm ci
 
-# Copy the rest of the application
 COPY . .
-
-# Build the frontend
 RUN npm run build
 
-# Serve the frontend using a lightweight web server (nginx)
+# Stage 2: Serve
 FROM nginx:alpine
-COPY --from=0 /app/dist /usr/share/nginx/html
+
+# Copy nginx config
+COPY --from=builder /app/nginx.conf /etc/nginx/conf.d/default.conf
+
+# Copy built assets
+COPY --from=builder /app/dist /usr/share/nginx/html
+
+# Create a non-root user (nginx already runs as non-root in alpine)
+RUN chown -R nginx:nginx /usr/share/nginx/html
+
 EXPOSE 80
 
 CMD ["nginx", "-g", "daemon off;"]

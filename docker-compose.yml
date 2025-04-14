@@ -7,18 +7,31 @@ services:
       - "5000:5000"
     env_file:
       - ./backend/.env
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
+      - PORT=5000
     depends_on:
       - database
+    restart: unless-stopped
 
   frontend:
     build: ./frontend
     ports:
       - "3000:80"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
     depends_on:
       - backend
+    restart: unless-stopped
 
   database:
-    image: mongo:latest
+    image: mongo:6.0
     container_name: mongo_db
     restart: always
     ports:
@@ -26,3 +39,8 @@ services:
     environment:
       MONGO_INITDB_ROOT_USERNAME: root
       MONGO_INITDB_ROOT_PASSWORD: example
+    volumes:
+      - mongodb_data:/data/db
+
+volumes:
+  mongodb_data:

@@ -1,18 +1,28 @@
-# Use Node.js base image
-FROM node:18
+# Stage 1: Build
+FROM node:18-alpine as builder
 
-# Set working directory
 WORKDIR /app
 
-# Copy package.json and install dependencies
+# Copy package files first for better caching
 COPY package.json package-lock.json ./
-RUN npm install
+RUN npm ci --only=production
 
-# Copy the rest of the application
+# Copy the rest of the files
 COPY . .
 
-# Expose port (if using Express, for example)
+# Stage 2: Runtime
+FROM node:18-alpine
+
+WORKDIR /app
+
+# Copy from builder
+COPY --from=builder /app .
+
+# Create a non-root user and switch to it
+RUN addgroup -S appgroup && adduser -S appuser -G appgroup
+RUN chown -R appuser:appgroup /app
+USER appuser
+
 EXPOSE 5000
 
-# Start the server
-CMD ["npm", "run", "start"]
+CMD ["npm", "start"]
