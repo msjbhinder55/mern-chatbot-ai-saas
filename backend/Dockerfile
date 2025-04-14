@@ -1,5 +1,5 @@
 # Stage 1: Build
-FROM node:18-alpine as builder
+FROM node:18.17.1-alpine3.18 as builder
 
 WORKDIR /app
 
@@ -11,7 +11,7 @@ RUN npm ci --only=production
 COPY . .
 
 # Stage 2: Runtime
-FROM node:18-alpine
+FROM node:18.17.1-alpine3.18
 
 WORKDIR /app
 

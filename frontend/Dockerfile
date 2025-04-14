@@ -1,5 +1,5 @@
 # Stage 1: Build
-FROM node:18-alpine as builder
+FROM node:18.17.1-alpine3.18 as builder
 
 WORKDIR /app
 
@@ -10,7 +10,7 @@ COPY . .
 RUN npm run build
 
 # Stage 2: Serve
-FROM nginx:alpine
+FROM nginx:1.25.2-alpine
 
 # Copy nginx config
 COPY --from=builder /app/nginx.conf /etc/nginx/conf.d/default.conf
