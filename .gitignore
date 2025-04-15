@@ -11,4 +11,3 @@ backend/.env
 # Ignore IDE specific files
 backend/.vscode/
 backend/.idea/
-
