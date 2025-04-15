@@ -11,8 +11,8 @@ on:
     branches: [main]
 
 env:
-  DOCKERHUB_USERNAME: ${{ secrets.msjbhinder }}
-  DOCKERHUB_TOKEN: ${{ secrets.dckr_pat_q3agl2UioulpYn3mNUaMRdG4cnc }}
+  DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+  DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
   IMAGE_TAG: ${{ github.sha }}
 
 jobs:
