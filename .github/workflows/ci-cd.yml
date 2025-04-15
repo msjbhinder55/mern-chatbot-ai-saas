@@ -66,3 +66,38 @@ jobs:
 
       - name: Run CodeQL Analysis
         uses: github/codeql-action/analyze@v2
+
+  deploy-istio:
+  needs: [push-images]
+  runs-on: ubuntu-latest
+  steps:
+    - uses: actions/checkout@v4
+    - name: Install kubectl
+      uses: azure/setup-kubectl@v3
+    - name: Install istioctl
+      run: |
+        curl -L https://istio.io/downloadIstio | sh -
+        echo "$(pwd)/istio-*/bin" >> $GITHUB_PATH
+    - name: Deploy Istio configs
+      run: |
+        kubectl apply -f k8s/istio/
+      env:
+        KUBE_CONFIG: ${{ secrets.KUBE_CONFIG }}
+
+        argocd-sync:
+  needs: [push-images]
+  runs-on: ubuntu-latest
+  steps:
+    - uses: actions/checkout@v4
+    - name: Install Argo CD CLI
+      run: |
+        curl -sSL -o argocd-linux-amd64 https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
+        sudo install -m 555 argocd-linux-amd64 /usr/local/bin/argocd
+        rm argocd-linux-amd64
+    - name: Sync Application
+      run: |
+        argocd login ${{ secrets.ARGOCD_SERVER }} --username admin --password ${{ secrets.ARGOCD_PASSWORD }} --insecure
+        argocd app sync mern-chatbot-prod
+        argocd app wait mern-chatbot-prod --health
+      env:
+        ARGOCD_SERVER: ${{ secrets.ARGOCD_SERVER }}

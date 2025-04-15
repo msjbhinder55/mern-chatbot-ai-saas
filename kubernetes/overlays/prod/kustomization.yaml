@@ -4,6 +4,8 @@ namespace: prod
 resources:
   - ../../base
   - ingress.yaml
+  - ../../base
+  - ../../istio
 patches:
   - path: frontend-resource-limits.yaml
     target:
@@ -13,3 +15,9 @@ patches:
     target:
       kind: Deployment
       name: backend
+namespace: production
+images:
+- name: backend
+  newTag: v1.2.3-prod
+- name: frontend
+  newTag: v1.2.3-prod

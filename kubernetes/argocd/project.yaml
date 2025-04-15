@@ -1,0 +1,14 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: mern-chatbot
+  namespace: argocd
+spec:
+  description: MERN Chatbot AI SaaS Project
+  destinations:
+    - namespace: production
+      server: https://kubernetes.default.svc
+    - namespace: staging
+      server: https://kubernetes.default.svc
+  sourceRepos:
+    - https://github.com/your-username/mern-chatbot-ai-saas.git

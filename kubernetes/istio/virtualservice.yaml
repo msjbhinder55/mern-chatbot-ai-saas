@@ -1,0 +1,23 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: mern-chatbot-virtualservice
+spec:
+  hosts:
+    - "chatbot.example.com"
+  gateways:
+    - mern-chatbot-gateway
+  http:
+    - route:
+        - destination:
+            host: frontend
+            port:
+              number: 80
+    - route:
+        - destination:
+            host: backend
+            port:
+              number: 5000
+      match:
+        - uri:
+            prefix: /api
