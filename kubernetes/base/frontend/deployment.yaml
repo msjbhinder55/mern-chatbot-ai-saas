@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: frontend
-          image: yourdockerhubusername/mern-chatbot-frontend:latest
+          image: msjbhinder/mern-chatbot-ai-saas-frontend:latest
           ports:
             - containerPort: 80
           envFrom:
