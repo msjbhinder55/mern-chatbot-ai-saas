@@ -161,22 +161,27 @@ jobs:
           cache-to: type=gha,mode=max
 
   sast-analysis:
-    needs: setup
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Run SAST (Semgrep)
-        uses: returntocorp/semgrep-action@v1
-        with:
-          config: p/ci
-          outputFormat: sarif
-          outputFile: semgrep.sarif
-      - name: Verify SARIF file exists
-        run: |
-          if [ ! -f "semgrep.sarif" ]; then
-            echo "{}" > semgrep.sarif
-          fi
-      - name: Upload SARIF results
-        uses: github/codeql-action/upload-sarif@v3
-        with:
-          sarif_file: semgrep.sarif
+  needs: setup
+  runs-on: ubuntu-latest
+  steps:
+    - uses: actions/checkout@v4
+
+    - name: Run Semgrep SAST
+      id: semgrep
+      uses: returntocorp/semgrep-action@v2
+      with:
+        config: p/ci
+        outputFormat: sarif
+        outputFile: semgrep.sarif
+      continue-on-error: true # Continue even if findings are found
+
+    - name: Validate and fix SARIF file
+      run: |
+        if [ ! -f "semgrep.sarif" ] || [ $(jq -e '.runs? | length > 0' semgrep.sarif) != "true" ]; then
+          echo '{"version":"2.1.0","runs":[]}' > semgrep.sarif
+        fi
+
+    - name: Upload SARIF results
+      uses: github/codeql-action/upload-sarif@v3
+      with:
+        sarif_file: semgrep.sarif

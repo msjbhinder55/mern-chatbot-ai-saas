@@ -1,4 +1,5 @@
-export default {
+// backend/.eslintrc.cjs
+module.exports = {
   root: true,
   parser: "@typescript-eslint/parser",
   plugins: ["@typescript-eslint"],
@@ -7,6 +8,6 @@ export default {
     project: "./tsconfig.json",
   },
   rules: {
-    // Your rules here
+    // Your custom rules here
   },
 };

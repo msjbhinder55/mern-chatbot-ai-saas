@@ -10,4 +10,5 @@ module.exports = {
       { outputDirectory: "test-results", outputName: "test-results.xml" },
     ],
   ],
+  testMatch: ["**/__tests__/**/*.test.[jt]s?(x)"],
 };
