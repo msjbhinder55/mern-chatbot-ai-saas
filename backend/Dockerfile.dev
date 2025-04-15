@@ -1,0 +1,21 @@
+# Development stage
+FROM node:18-alpine
+
+# Create working directory with proper permissions
+WORKDIR /app
+RUN chown -R node:node /app
+
+# Switch to node user (comes with Node.js image)
+USER node
+
+# Copy package files first for better caching
+COPY --chown=node:node package.json package-lock.json ./
+
+# Install dependencies
+RUN npm install
+
+# Copy remaining files
+COPY --chown=node:node . .
+
+EXPOSE 5000
+CMD ["npm", "run", "dev"]
