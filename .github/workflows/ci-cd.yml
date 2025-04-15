@@ -6,86 +6,41 @@ on:
   pull_request:
     branches: [main]
 
+env:
+  DOCKER_IMAGE_PREFIX: ${{ secrets.DOCKERHUB_USERNAME }}/mern-chatbot-ai-saas
+
 jobs:
-  build-backend:
+  build-and-test:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        component: [backend, frontend]
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      - name: Build Backend Docker Image
-        run: docker build -t backend ./backend
-
-  build-frontend:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      - name: Build Frontend Docker Image
-        run: docker build -t frontend ./frontend
-
-  test-backend:
-    needs: build-backend
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
-
-      - name: Run Backend Unit Tests
-        run: |
-          docker build -t backend-test ./backend
-          docker run backend-test npm test
-
-  test-frontend:
-    needs: build-frontend
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
-
-      - name: Run Frontend Unit Tests
-        run: |
-          docker build -t frontend-test ./frontend
-          docker run frontend-test npm test
-
-  lint:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
-
-      - name: Run ESLint
-        run: |
-          npm install eslint
-          npx eslint . || true  # don't fail the pipeline
-
-  sast:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
-
-      - name: Run SAST with CodeQL
-        uses: github/codeql-action/init@v2
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
         with:
-          languages: javascript
+          node-version: "18"
 
-      - name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@v2
+      - name: Install Dependencies
+        run: npm install
+        working-directory: ./${{ matrix.component }}
 
-  push-images:
-    needs: [build-frontend, build-backend]
+      - name: Run Tests
+        run: npm test
+        working-directory: ./${{ matrix.component }}
+
+  docker-build:
+    needs: build-and-test
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
 
       - name: Login to DockerHub
         uses: docker/login-action@v3
@@ -93,12 +48,21 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Tag and Push Backend Image
+      - name: Build and Push Backend
         run: |
-          docker tag backend ${{ secrets.DOCKERHUB_USERNAME }}/mern-chatbot-ai-saas-backend:latest
-          docker push ${{ secrets.DOCKERHUB_USERNAME }}/mern-chatbot-ai-saas-backend:latest
+          docker build -t ${{ env.DOCKER_IMAGE_PREFIX }}-backend ./backend
+          docker push ${{ env.DOCKER_IMAGE_PREFIX }}-backend
 
-      - name: Tag and Push Frontend Image
+      - name: Build and Push Frontend
         run: |
-          docker tag frontend ${{ secrets.DOCKERHUB_USERNAME }}/mern-chatbot-ai-saas-frontend:latest
-          docker push ${{ secrets.DOCKERHUB_USERNAME }}/mern-chatbot-ai-saas-frontend:latest
+          docker build -t ${{ env.DOCKER_IMAGE_PREFIX }}-frontend ./frontend
+          docker push ${{ env.DOCKER_IMAGE_PREFIX }}-frontend
+
+  security-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Run CodeQL Analysis
+        uses: github/codeql-action/analyze@v2

@@ -1,19 +1,15 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 namespace: prod
-bases:
+resources:
   - ../../base
-patchesStrategicMerge:
-  - backend-patch.yaml
-  - frontend-patch.yaml
-  - hpa.yaml
-configMapGenerator:
-  - name: app-config
-    behavior: merge
-    literals:
-      - NODE_ENV=production
-images:
-  - name: yourdockerhubusername/mern-chatbot-backend
-    newTag: stable
-  - name: yourdockerhubusername/mern-chatbot-frontend
-    newTag: stable
+  - ingress.yaml
+patches:
+  - path: frontend-resource-limits.yaml
+    target:
+      kind: Deployment
+      name: frontend
+  - path: backend-resource-limits.yaml
+    target:
+      kind: Deployment
+      name: backend

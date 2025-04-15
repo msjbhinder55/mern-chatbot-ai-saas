@@ -3,6 +3,5 @@ kind: ConfigMap
 metadata:
   name: app-config
 data:
-  NODE_ENV: production
-  FRONTEND_URL: "http://chatbot.example.com"
-  API_BASE_URL: "/api"
+  API_BASE_URL: "http://backend-service:5000"
+  NODE_ENV: "production"
