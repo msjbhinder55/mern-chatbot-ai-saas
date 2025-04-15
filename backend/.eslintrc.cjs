@@ -1,4 +1,4 @@
-module.exports = {
+export default {
   root: true,
   parser: "@typescript-eslint/parser",
   plugins: ["@typescript-eslint"],
@@ -7,6 +7,6 @@ module.exports = {
     project: "./tsconfig.json",
   },
   rules: {
-    // Custom rules here
+    // Your rules here
   },
 };
