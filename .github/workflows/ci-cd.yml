@@ -58,25 +58,25 @@ jobs:
           fi || (echo "ESLint failed" && exit 1)
 
   test-backend:
-  needs: setup
-  runs-on: ubuntu-latest
-  steps:
-    - uses: actions/checkout@v4
-    - uses: actions/setup-node@v3
-      with:
-        node-version: 18
-    - name: Install dependencies
-      working-directory: ./backend
-      run: npm ci
-    - name: Run tests
-      working-directory: ./backend
-      run: npm test
-    - name: Upload test results
-      if: always()
-      uses: actions/upload-artifact@v4
-      with:
-        name: backend-test-results
-        path: ./backend/test-results.xml
+    needs: setup
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+      - name: Install dependencies
+        working-directory: ./backend
+        run: npm ci
+      - name: Run tests
+        working-directory: ./backend
+        run: npm test
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-test-results
+          path: ./backend/test-results.xml
 
   build-backend:
     needs: [lint-backend, test-backend]
@@ -119,25 +119,25 @@ jobs:
         run: npm run lint || (echo "ESLint failed" && exit 1)
 
   test-frontend:
-  needs: setup
-  runs-on: ubuntu-latest
-  steps:
-    - uses: actions/checkout@v4
-    - uses: actions/setup-node@v3
-      with:
-        node-version: 18
-    - name: Install dependencies
-      working-directory: ./frontend
-      run: npm ci
-    - name: Run tests
-      working-directory: ./frontend
-      run: npm test
-    - name: Upload test results
-      if: always()
-      uses: actions/upload-artifact@v4
-      with:
-        name: frontend-test-results
-        path: ./frontend/test-results.xml
+    needs: setup
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+      - name: Install dependencies
+        working-directory: ./frontend
+        run: npm ci
+      - name: Run tests
+        working-directory: ./frontend
+        run: npm test
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-test-results
+          path: ./frontend/test-results.xml
 
   build-frontend:
     needs: [lint-frontend, test-frontend]
@@ -161,25 +161,22 @@ jobs:
           cache-to: type=gha,mode=max
 
   sast-analysis:
-  needs: setup
-  runs-on: ubuntu-latest
-  steps:
-    - uses: actions/checkout@v4
-    
-    - name: Run SAST (Semgrep)
-      uses: returntocorp/semgrep-action@v1
-      with:
-        config: p/ci
-        outputFormat: sarif
-        outputFile: semgrep.sarif
-    
-    - name: Verify SARIF file exists
-      run: |
-        if [ ! -f "semgrep.sarif" ]; then
-          echo "{}" > semgrep.sarif  # Create empty file if none exists
-        fi
-    
-    - name: Upload SARIF results
-      uses: github/codeql-action/upload-sarif@v3
-      with:
-        sarif_file: semgrep.sarif
+    needs: setup
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run SAST (Semgrep)
+        uses: returntocorp/semgrep-action@v1
+        with:
+          config: p/ci
+          outputFormat: sarif
+          outputFile: semgrep.sarif
+      - name: Verify SARIF file exists
+        run: |
+          if [ ! -f "semgrep.sarif" ]; then
+            echo "{}" > semgrep.sarif
+          fi
+      - name: Upload SARIF results
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: semgrep.sarif
