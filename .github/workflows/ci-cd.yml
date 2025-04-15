@@ -34,7 +34,7 @@ jobs:
 
       - name: Install dependencies
         working-directory: ./${{ matrix.component }}
-        run: npm ci
+        run: npm install
 
       - name: Run ESLint
         working-directory: ./${{ matrix.component }}
