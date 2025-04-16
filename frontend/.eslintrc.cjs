@@ -1,32 +1,33 @@
 module.exports = {
-  env: {
-    browser: true,
-    es2021: true,
-  },
+  root: true,
+  parser: "@typescript-eslint/parser",
+  plugins: ["@typescript-eslint", "react"],
   extends: [
     "eslint:recommended",
     "plugin:react/recommended",
     "plugin:@typescript-eslint/recommended",
-    "airbnb",
-    "airbnb-typescript",
   ],
-  parser: "@typescript-eslint/parser",
+  env: {
+    browser: true,
+    node: true,
+    es2021: true,
+  },
   parserOptions: {
     ecmaFeatures: {
       jsx: true,
     },
     ecmaVersion: "latest",
     sourceType: "module",
-    project: "./tsconfig.json",
-  },
-  plugins: ["react", "@typescript-eslint"],
-  rules: {
-    "react/react-in-jsx-scope": "off",
-    "react/jsx-uses-react": "off",
   },
   settings: {
     react: {
-      version: "detect",
+      version: "detect", // 👈 Important for JSX rules
     },
+  },
+  ignorePatterns: ["dist/", "node_modules/"],
+  rules: {
+    "@typescript-eslint/no-unused-vars": ["warn"],
+    "@typescript-eslint/no-explicit-any": "off",
+    "react/react-in-jsx-scope": "off", // 👈 Turns off the annoying React import rule
   },
 };

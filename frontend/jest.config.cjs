@@ -1,15 +1,15 @@
 module.exports = {
   preset: "ts-jest",
-  testEnvironment: "node",
+  testEnvironment: "jsdom",
   reporters: [
     "default",
     [
       "jest-junit",
       {
         outputDirectory: "./reports/junit",
-        outputName: "backend-junit.xml",
+        outputName: "frontend-junit.xml",
       },
     ],
   ],
-  testEnvironment: "node",
+  testEnvironment: "jsdom",
 };

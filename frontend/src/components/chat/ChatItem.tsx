@@ -54,13 +54,19 @@ const ChatItem = ({
         )}
         {messageBlocks &&
           messageBlocks.length &&
-          messageBlocks.map((block) =>
+          messageBlocks.map((block, index) =>
             isCodeBlock(block) ? (
-              <SyntaxHighlighter style={coldarkDark} language="javascript">
+              <SyntaxHighlighter
+                key={`code-block-${index}`} // Add a unique key for each block
+                style={coldarkDark}
+                language="javascript"
+              >
                 {block}
               </SyntaxHighlighter>
             ) : (
-              <Typography sx={{ fontSize: "20px" }}>{block}</Typography>
+              <Typography key={`text-block-${index}`} sx={{ fontSize: "20px" }}>
+                {block}
+              </Typography>
             )
           )}
       </Box>
@@ -85,13 +91,19 @@ const ChatItem = ({
         )}
         {messageBlocks &&
           messageBlocks.length &&
-          messageBlocks.map((block) =>
+          messageBlocks.map((block, index) =>
             isCodeBlock(block) ? (
-              <SyntaxHighlighter style={coldarkDark} language="javascript">
+              <SyntaxHighlighter
+                key={`code-block-${index}`} // Add a unique key for each block
+                style={coldarkDark}
+                language="javascript"
+              >
                 {block}
               </SyntaxHighlighter>
             ) : (
-              <Typography sx={{ fontSize: "20px" }}>{block}</Typography>
+              <Typography key={`text-block-${index}`} sx={{ fontSize: "20px" }}>
+                {block}
+              </Typography>
             )
           )}
       </Box>

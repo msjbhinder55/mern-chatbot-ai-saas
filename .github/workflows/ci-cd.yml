@@ -12,6 +12,7 @@ on:
       - "docs/**"
 
 env:
+  NODE_VERSION: 18
   DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
   DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
   IMAGE_TAG: ${{ github.sha }}
@@ -37,46 +38,41 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: 18
+          node-version: ${{ env.NODE_VERSION }}
 
       - name: Install dependencies
         working-directory: ./backend
-        run: |
-          if [ -f package-lock.json ]; then
-            npm ci
-          else
-            npm install
-          fi
+        run: npm ci
 
-      - name: Run ESLint
+      - name: Run ESLint (backend)
         working-directory: ./backend
-        run: |
-          if [ -f .eslintrc.cjs ]; then
-            npm run lint -- --config .eslintrc.cjs
-          else
-            npm run lint
-          fi || (echo "ESLint failed" && exit 1)
+        run: npm run lint || (echo "❌ Backend ESLint failed" && exit 1)
 
   test-backend:
     needs: setup
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
         with:
-          node-version: 18
+          node-version: ${{ env.NODE_VERSION }}
+
       - name: Install dependencies
         working-directory: ./backend
         run: npm ci
+
       - name: Run tests
         working-directory: ./backend
-        run: npm test
+        run: npm run test:ci
+
       - name: Upload test results
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: backend-test-results
-          path: ./backend/test-results.xml
+          path: ./backend/test-results/test-results.xml
 
   build-backend:
     needs: [lint-backend, test-backend]
@@ -108,36 +104,41 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: 18
+          node-version: ${{ env.NODE_VERSION }}
 
       - name: Install dependencies
         working-directory: ./frontend
         run: npm ci
 
-      - name: Run ESLint
+      - name: Run ESLint (frontend)
         working-directory: ./frontend
-        run: npm run lint || (echo "ESLint failed" && exit 1)
+        run: npm run lint || (echo "❌ Frontend ESLint failed" && exit 1)
 
   test-frontend:
     needs: setup
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
         with:
-          node-version: 18
+          node-version: ${{ env.NODE_VERSION }}
+
       - name: Install dependencies
         working-directory: ./frontend
         run: npm ci
+
       - name: Run tests
         working-directory: ./frontend
-        run: npm test
+        run: npm run test:ci
+
       - name: Upload test results
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: frontend-test-results
-          path: ./frontend/test-results.xml
+          path: ./frontend/test-results/test-results.xml
 
   build-frontend:
     needs: [lint-frontend, test-frontend]
@@ -161,27 +162,27 @@ jobs:
           cache-to: type=gha,mode=max
 
   sast-analysis:
-  needs: setup
-  runs-on: ubuntu-latest
-  steps:
-    - uses: actions/checkout@v4
+    needs: setup
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
 
-    - name: Run Semgrep SAST
-      id: semgrep
-      uses: returntocorp/semgrep-action@v2
-      with:
-        config: p/ci
-        outputFormat: sarif
-        outputFile: semgrep.sarif
-      continue-on-error: true # Continue even if findings are found
+      - name: Run Semgrep SAST
+        id: semgrep
+        uses: returntocorp/semgrep-action@v2
+        with:
+          config: p/ci
+          outputFormat: sarif
+          outputFile: semgrep.sarif
+        continue-on-error: true
 
-    - name: Validate and fix SARIF file
-      run: |
-        if [ ! -f "semgrep.sarif" ] || [ $(jq -e '.runs? | length > 0' semgrep.sarif) != "true" ]; then
-          echo '{"version":"2.1.0","runs":[]}' > semgrep.sarif
-        fi
+      - name: Validate and fix SARIF file
+        run: |
+          if [ ! -f "semgrep.sarif" ] || [ $(jq -e '.runs? | length > 0' semgrep.sarif) != "true" ]; then
+            echo '{"version":"2.1.0","runs":[]}' > semgrep.sarif
+          fi
 
-    - name: Upload SARIF results
-      uses: github/codeql-action/upload-sarif@v3
-      with:
-        sarif_file: semgrep.sarif
+      - name: Upload SARIF results
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: semgrep.sarif
