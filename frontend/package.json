@@ -10,7 +10,7 @@
     "lint": "eslint 'src/**/*.{ts,tsx}'",
     "lint:fix": "eslint 'src/**/*.{ts,tsx}' --fix",
     "test": "jest",
-    "test:ci": "jest --ci"
+    "test:ci": "jest --ci --passWithNoTests --reporters=default --reporters=jest-junit"
   },
   "dependencies": {
     "@emotion/react": "^11.11.4",
