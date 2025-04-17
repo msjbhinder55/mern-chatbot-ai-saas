@@ -1,22 +1,19 @@
-# Use Node.js base image
-FROM node:18
-
-# Set working directory
+# Build Stage
+FROM node:20-alpine AS builder
 WORKDIR /app
-
-# Copy package.json and install dependencies
-COPY package.json package-lock.json ./
-RUN npm install
-
-# Copy the rest of the application
+COPY package*.json ./
+RUN npm ci
 COPY . .
-
-# Build the frontend
 RUN npm run build
 
-# Serve the frontend using a lightweight web server (nginx)
+# Serve with nginx
 FROM nginx:alpine
-COPY --from=0 /app/dist /usr/share/nginx/html
-EXPOSE 80
+COPY --from=builder /app/dist /usr/share/nginx/html
+COPY nginx.conf /etc/nginx/nginx.conf
 
+# Non-root user
+RUN addgroup -S appgroup && adduser -S appuser -G appgroup
+USER appuser
+
+EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]
