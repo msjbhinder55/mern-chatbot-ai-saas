@@ -21,13 +21,13 @@ module.exports = {
   },
   settings: {
     react: {
-      version: "detect",
+      version: "detect", // 👈 Important for JSX rules
     },
   },
   ignorePatterns: ["dist/", "node_modules/"],
   rules: {
     "@typescript-eslint/no-unused-vars": ["warn"],
     "@typescript-eslint/no-explicit-any": "off",
-    "react/react-in-jsx-scope": "off", // 👈 Important
+    "react/react-in-jsx-scope": "off", // 👈 Turns off the annoying React import rule
   },
 };

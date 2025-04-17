@@ -1,4 +1,3 @@
-import React from "react";
 import { Box, Avatar, Typography } from "@mui/material";
 import { useAuth } from "../../context/AuthContext";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
@@ -9,6 +8,7 @@ function extractCodeFromString(message: string) {
     const blocks = message.split("```");
     return blocks;
   }
+  return null;
 }
 
 function isCodeBlock(str: string) {
@@ -26,6 +26,7 @@ function isCodeBlock(str: string) {
   }
   return false;
 }
+
 const ChatItem = ({
   content,
   role,
@@ -35,7 +36,8 @@ const ChatItem = ({
 }) => {
   const messageBlocks = extractCodeFromString(content);
   const auth = useAuth();
-  return role == "assistant" ? (
+
+  return role === "assistant" ? (
     <Box
       sx={{
         display: "flex",
@@ -54,14 +56,19 @@ const ChatItem = ({
           <Typography sx={{ fontSize: "20px" }}>{content}</Typography>
         )}
         {messageBlocks &&
-          messageBlocks.length &&
-          messageBlocks.map((block) =>
+          messageBlocks.map((block, index) =>
             isCodeBlock(block) ? (
-              <SyntaxHighlighter style={coldarkDark} language="javascript">
+              <SyntaxHighlighter
+                key={`code-${index}`}
+                style={coldarkDark}
+                language="javascript"
+              >
                 {block}
               </SyntaxHighlighter>
             ) : (
-              <Typography sx={{ fontSize: "20px" }}>{block}</Typography>
+              <Typography key={`text-${index}`} sx={{ fontSize: "20px" }}>
+                {block}
+              </Typography>
             )
           )}
       </Box>
@@ -85,14 +92,19 @@ const ChatItem = ({
           <Typography sx={{ fontSize: "20px" }}>{content}</Typography>
         )}
         {messageBlocks &&
-          messageBlocks.length &&
-          messageBlocks.map((block) =>
+          messageBlocks.map((block, index) =>
             isCodeBlock(block) ? (
-              <SyntaxHighlighter style={coldarkDark} language="javascript">
+              <SyntaxHighlighter
+                key={`code-${index}`}
+                style={coldarkDark}
+                language="javascript"
+              >
                 {block}
               </SyntaxHighlighter>
             ) : (
-              <Typography sx={{ fontSize: "20px" }}>{block}</Typography>
+              <Typography key={`text-${index}`} sx={{ fontSize: "20px" }}>
+                {block}
+              </Typography>
             )
           )}
       </Box>
