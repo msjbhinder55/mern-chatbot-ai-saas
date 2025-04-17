@@ -7,7 +7,10 @@
   "scripts": {
     "dev": "concurrently \"npx tsc --watch\" \"nodemon -q dist/index.js\" ",
     "build": "node dist/index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "lint": "eslint 'src/**/*.{ts,tsx}'",
+    "lint:fix": "eslint 'src/**/*.{ts,tsx}' --fix",
+    "test": "jest --coverage",
+    "test:ci": "jest --ci --passWithNoTests --reporters=default --reporters=jest-junit"
   },
   "keywords": [],
   "author": "",
