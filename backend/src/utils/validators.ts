@@ -3,7 +3,8 @@ import { body, ValidationChain, validationResult } from "express-validator";
 
 export const validate = (validations: ValidationChain[]) => {
   return async (req: Request, res: Response, next: NextFunction) => {
-    for (let validation of validations) {
+    for (const validation of validations) {
+      // Changed 'let' to 'const'
       const result = await validation.run(req);
       if (!result.isEmpty()) {
         break;
@@ -22,7 +23,7 @@ export const loginValidator = [
   body("password")
     .trim()
     .isLength({ min: 6 })
-    .withMessage("Password should contain atleast 6 characters"),
+    .withMessage("Password should contain at least 6 characters"),
 ];
 
 export const signupValidator = [
@@ -31,5 +32,5 @@ export const signupValidator = [
 ];
 
 export const chatCompletionValidator = [
-  body("message").notEmpty().withMessage("Message  is required"),
+  body("message").notEmpty().withMessage("Message is required"),
 ];

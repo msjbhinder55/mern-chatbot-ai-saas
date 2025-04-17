@@ -2,10 +2,12 @@ import { NextFunction, Request, Response } from "express";
 import User from "../models/User.js";
 import { configureOpenAI } from "../config/openai-config.js";
 import { OpenAIApi, ChatCompletionRequestMessage } from "openai";
+
 export const generateChatCompletion = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  _next: NextFunction // Prefix with underscore to indicate intentional unused var
 ) => {
   const { message } = req.body;
   try {
@@ -14,6 +16,7 @@ export const generateChatCompletion = async (
       return res
         .status(401)
         .json({ message: "User not registered OR Token malfunctioned" });
+
     // grab chats of user
     const chats = user.chats.map(({ role, content }) => ({
       role,
@@ -42,7 +45,8 @@ export const generateChatCompletion = async (
 export const sendChatsToUser = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  _next: NextFunction // Prefix with underscore
 ) => {
   try {
     //user token check
@@ -63,7 +67,8 @@ export const sendChatsToUser = async (
 export const deleteChats = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  _next: NextFunction // Prefix with underscore
 ) => {
   try {
     //user token check
@@ -74,7 +79,7 @@ export const deleteChats = async (
     if (user._id.toString() !== res.locals.jwtData.id) {
       return res.status(401).send("Permissions didn't match");
     }
-    //@ts-ignore
+    //@ts-expect-error - We're intentionally ignoring type checking here
     user.chats = [];
     await user.save();
     return res.status(200).json({ message: "OK" });
