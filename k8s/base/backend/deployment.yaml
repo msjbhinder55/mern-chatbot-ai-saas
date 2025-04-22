@@ -5,6 +5,10 @@ metadata:
 spec:
   replicas: 1
   template:
+    metadata:
+      labels:
+        app: backend
+        version: v1 # Add this line
     spec:
       containers:
         - name: backend
