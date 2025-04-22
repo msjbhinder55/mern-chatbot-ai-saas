@@ -1,0 +1,5 @@
+resources:
+  - ../base
+patchesStrategicMerge:
+  - resource-patch.yaml
+namespace: prod

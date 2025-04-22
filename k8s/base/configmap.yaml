@@ -3,6 +3,5 @@ kind: ConfigMap
 metadata:
   name: app-config
 data:
-  FRONTEND_URL: "http://mern-chatbot-ai-saas-frontend"
-  BACKEND_URL: "http://mern-chatbot-ai-saas-backend"
-  NODE_ENV: "production"
+  NODE_ENV: production
+  BACKEND_URL: http://backend:5000
