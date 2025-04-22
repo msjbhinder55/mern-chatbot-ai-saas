@@ -1,43 +1,44 @@
 import { NextFunction, Request, Response } from "express";
 import User from "../models/User.js";
 import { configureOpenAI } from "../config/openai-config.js";
-import { OpenAIApi, ChatCompletionRequestMessage } from "openai";
+import OpenAI from "openai";
+
+const openai = configureOpenAI(); // should return `new OpenAI({ apiKey })` — see note below
 
 export const generateChatCompletion = async (
   req: Request,
   res: Response,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  _next: NextFunction // Prefix with underscore to indicate intentional unused var
+  _next: NextFunction
 ) => {
   const { message } = req.body;
   try {
     const user = await User.findById(res.locals.jwtData.id);
-    if (!user)
+    if (!user) {
       return res
         .status(401)
         .json({ message: "User not registered OR Token malfunctioned" });
+    }
 
-    // grab chats of user
+    // Cast manually as only `user`/`assistant` roles (not `function`)
     const chats = user.chats.map(({ role, content }) => ({
-      role,
+      role: role as "user" | "assistant" | "system", // helps TS know it's safe
       content,
-    })) as ChatCompletionRequestMessage[];
-    chats.push({ content: message, role: "user" });
-    user.chats.push({ content: message, role: "user" });
+    })) as OpenAI.Chat.Completions.ChatCompletionMessageParam[];
 
-    // send all chats with new one to openAI API
-    const config = configureOpenAI();
-    const openai = new OpenAIApi(config);
-    // get latest response
-    const chatResponse = await openai.createChatCompletion({
+    chats.push({ role: "user", content: message });
+    user.chats.push({ role: "user", content: message });
+
+    const response = await openai.chat.completions.create({
       model: "gpt-3.5-turbo",
       messages: chats,
     });
-    user.chats.push(chatResponse.data.choices[0].message);
+
+    user.chats.push(response.choices[0].message);
     await user.save();
+
     return res.status(200).json({ chats: user.chats });
   } catch (error) {
-    console.log(error);
+    console.error(error);
     return res.status(500).json({ message: "Something went wrong" });
   }
 };
@@ -45,7 +46,6 @@ export const generateChatCompletion = async (
 export const sendChatsToUser = async (
   req: Request,
   res: Response,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   _next: NextFunction // Prefix with underscore
 ) => {
   try {
@@ -67,7 +67,6 @@ export const sendChatsToUser = async (
 export const deleteChats = async (
   req: Request,
   res: Response,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   _next: NextFunction // Prefix with underscore
 ) => {
   try {
