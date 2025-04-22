@@ -1,0 +1,10 @@
+resources:
+  - backend/deployment.yaml
+  - backend/service.yaml
+  - frontend/deployment.yaml
+  - frontend/service.yaml
+  - database/mongo-statefulset.yaml
+  - database/mongo-pvc.yaml
+  - configmap.yaml
+  - secret.yaml
+  - ingress.yaml
