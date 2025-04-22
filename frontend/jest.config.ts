@@ -1,4 +1,6 @@
-module.exports = {
+import type { Config } from "jest";
+
+const config: Config = {
   preset: "ts-jest",
   testEnvironment: "node",
   reporters: [
@@ -11,5 +13,6 @@ module.exports = {
       },
     ],
   ],
-  testEnvironment: "node",
 };
+
+export default config;

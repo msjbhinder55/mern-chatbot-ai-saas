@@ -1,6 +1,7 @@
+/** @type {import('jest').Config} */
 module.exports = {
   preset: "ts-jest",
-  testEnvironment: "jsdom",
+  testEnvironment: "node",
   reporters: [
     "default",
     [
@@ -11,5 +12,4 @@ module.exports = {
       },
     ],
   ],
-  testEnvironment: "jsdom",
 };

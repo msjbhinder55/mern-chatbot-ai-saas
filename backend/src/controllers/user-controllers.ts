@@ -1,13 +1,12 @@
 import { NextFunction, Request, Response } from "express";
 import User from "../models/User.js";
-import { hash, compare } from "bcrypt";
+import { hash, compare } from "bcryptjs";
 import { createToken } from "../utils/token-manager.js";
 import { COOKIE_NAME } from "../utils/constants.js";
 
 export const getAllUsers = async (
   req: Request,
   res: Response,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   _next: NextFunction
 ) => {
   try {
@@ -23,7 +22,6 @@ export const getAllUsers = async (
 export const userSignup = async (
   req: Request,
   res: Response,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   _next: NextFunction
 ) => {
   try {
@@ -66,7 +64,6 @@ export const userSignup = async (
 export const userLogin = async (
   req: Request,
   res: Response,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   _next: NextFunction
 ) => {
   try {
@@ -112,7 +109,6 @@ export const userLogin = async (
 export const verifyUser = async (
   req: Request,
   res: Response,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   _next: NextFunction
 ) => {
   try {
@@ -136,7 +132,6 @@ export const verifyUser = async (
 export const userLogout = async (
   req: Request,
   res: Response,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   _next: NextFunction
 ) => {
   try {
