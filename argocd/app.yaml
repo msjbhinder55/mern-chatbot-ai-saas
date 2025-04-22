@@ -1,0 +1,22 @@
+# argocd/app.yaml
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: mern-chatbot-ai-saas
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/your-username/mern-chatbot-ai-saas.git
+    path: k8s/prod # Points to prod overlay
+    targetRevision: main
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: prod
+  syncPolicy:
+    automated:
+      prune: true # Delete orphaned resources
+      selfHeal: true # Auto-correct drift
+      allowEmpty: false
+    syncOptions:
+      - CreateNamespace=true # Auto-create namespace if missing
